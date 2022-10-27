@@ -39,9 +39,39 @@ public class Icons
     public static ImageIcon HAND;
     
     /**
-     * Broom icon
+     * Eraser icon
      */
-    public static ImageIcon BROOM;
+    public static ImageIcon ERASER;
+    
+    /**
+     * Palette icon
+     */
+    public static ImageIcon PALETTE;
+    
+    /**
+     * Background icon
+     */
+    public static ImageIcon BACKGROUND;
+    
+    /**
+     * Foreground icon
+     */
+    public static ImageIcon FOREGROUND;
+    
+    /**
+     * Line icon
+     */
+    public static ImageIcon LINE;
+    
+    /**
+     * Triangle icon
+     */
+    public static ImageIcon TRIANGLE;
+    
+    /**
+     * Polygon icon
+     */
+    public static ImageIcon POLYGON;
     
     /**
      * Reference to icons class
@@ -55,7 +85,13 @@ public class Icons
     {
         Icons.CURSOR = new ImageIcon(Main.class.getClassLoader().getResource("cursor.png"));
         Icons.HAND = new ImageIcon(Main.class.getClassLoader().getResource("hand.png"));
-        Icons.BROOM = new ImageIcon(Main.class.getClassLoader().getResource("broom.png"));
+        Icons.ERASER = new ImageIcon(Main.class.getClassLoader().getResource("eraser.png"));
+        Icons.PALETTE = new ImageIcon(Main.class.getClassLoader().getResource("palette.png"));
+        Icons.BACKGROUND = new ImageIcon(Main.class.getClassLoader().getResource("background.png"));
+        Icons.FOREGROUND = new ImageIcon(Main.class.getClassLoader().getResource("foreground.png"));
+        Icons.LINE = new ImageIcon(Main.class.getClassLoader().getResource("line.png"));
+        Icons.TRIANGLE = new ImageIcon(Main.class.getClassLoader().getResource("triangle.png"));
+        Icons.POLYGON = new ImageIcon(Main.class.getClassLoader().getResource("polygon.png"));
     }
     
     /**

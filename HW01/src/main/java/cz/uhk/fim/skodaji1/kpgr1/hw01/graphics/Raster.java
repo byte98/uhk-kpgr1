@@ -34,6 +34,12 @@ public interface Raster
     public abstract void setClearColor(int color);
     
     /**
+     * Gets actually set clear color
+     * @return Clear color
+     */
+    public abstract int getClearColor();
+    
+    /**
      * Gets horizontal size
      * @return Width
      */

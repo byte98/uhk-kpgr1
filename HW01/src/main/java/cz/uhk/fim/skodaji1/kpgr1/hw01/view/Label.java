@@ -21,24 +21,24 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
+import javax.swing.JLabel;
 
 /**
- * Class representing button used for UI
+ * Class representing label used for user interface
  * @author Jiri Skoda <jiri.skoda@student.upce.cz>
  */
-public class Button extends JButton
+public class Label extends JLabel
 {
     /**
-     * Icon which will be displayed in button
+     * Icon which will be displayed in label
      */
     private ImageIcon icon;
     
     /**
-     * Creates new button
-     * @param icon Icon which will be displayed in button
+     * Creates new label
+     * @param icon Icon which will be displayed in label
      */
-    public Button(ImageIcon icon)
+    public Label(ImageIcon icon)
     {
         super(icon);
         this.icon = icon;
@@ -55,6 +55,5 @@ public class Button extends JButton
         g2.drawImage(this.icon.getImage(),
                 (this.getWidth() / 2) - (this.icon.getIconWidth() / 2),
                 (this.getHeight() / 2) - (this.icon.getIconHeight() / 2),null);
-        super.paintComponent(g);
     }
 }

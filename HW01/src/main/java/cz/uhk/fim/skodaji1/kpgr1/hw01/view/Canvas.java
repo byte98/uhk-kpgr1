@@ -17,10 +17,76 @@
  */
 package cz.uhk.fim.skodaji1.kpgr1.hw01.view;
 
+import cz.uhk.fim.skodaji1.kpgr1.hw01.graphics.Raster;
+import cz.uhk.fim.skodaji1.kpgr1.hw01.graphics.RasterBufferedImage;
+import java.awt.Graphics;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.util.Objects;
+import javax.swing.JPanel;
+
 /**
  * Class representing canvas with ability for drawing
- * @author Jiri Skoda <skodaji@uhk.cz>
  */
-public class Canvas {
+public final class Canvas extends JPanel
+{
     
+    /**
+     * Raster which will be drawn
+     */
+    private RasterBufferedImage raster;
+    
+    /**
+     * Creates new canvas
+     */
+    public Canvas()
+    {
+        super();
+        this.raster = new RasterBufferedImage(MainWindow.WIDTH, MainWindow.HEIGHT);
+        this.addComponentListener(new ComponentAdapter(){
+            @Override
+            public void componentResized(ComponentEvent e)
+            {
+                if (getWidth()<1 || getHeight()<1)
+                        return;
+                if (Objects.nonNull(raster) && getWidth()<=raster.getWidth() && getHeight()<=raster.getHeight()) //no resize if new one is smaller
+                        return;
+                RasterBufferedImage newRaster = new RasterBufferedImage(getWidth(), getHeight());
+                newRaster.setClearColor(raster.getClearColor());
+                newRaster.clear();
+                if (Objects.nonNull(raster))
+                {
+                    newRaster.draw(raster);
+                }                
+                raster = newRaster;
+            }
+        });
+    }
+    
+    /**
+     * Redraws whole canvas
+     */
+    public void redraw()
+    {
+        this.repaint();
+    }
+    
+    /**
+     * Gets actually used raster
+     * @return Actually used raster
+     */
+    public Raster getRaster()
+    {
+        return this.raster;
+    }
+    
+    @Override
+    public void paintComponent(Graphics g)
+    {
+        super.paintComponent(g);
+        if (Objects.nonNull(this.raster))
+        {
+            this.raster.repaint(g);
+        }        
+    }
 }

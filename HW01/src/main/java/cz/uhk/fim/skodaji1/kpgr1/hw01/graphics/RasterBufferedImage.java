@@ -20,12 +20,19 @@ package cz.uhk.fim.skodaji1.kpgr1.hw01.graphics;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 
 /**
  * Class implementing raster using buffered image
  */
 public class RasterBufferedImage implements Raster
 {
+    private static int i = 0;
+    
     /**
      * Image which will be edited
      */
@@ -91,9 +98,13 @@ public class RasterBufferedImage implements Raster
     @Override
     public void clear()
     {
-        Graphics g = this.image.getGraphics();
-        g.setColor(new Color(color));
-        g.clearRect(0, 0, this.image.getWidth() - 1, this.image.getHeight() - 1);
+        for (int x = 0; x < this.image.getWidth(); x++)
+        {
+            for (int y = 0; y < this.image.getHeight(); y++)
+            {
+                this.setPixel(x, y, this.color);
+            }
+        }
     }
 
     @Override
@@ -102,6 +113,12 @@ public class RasterBufferedImage implements Raster
         this.color = color;
     }
 
+    @Override
+    public int getClearColor()
+    {
+        return this.color;
+    }
+    
     @Override
     public int getWidth()
     {

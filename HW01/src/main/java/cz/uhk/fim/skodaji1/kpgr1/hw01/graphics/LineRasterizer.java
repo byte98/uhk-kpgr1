@@ -17,37 +17,86 @@
  */
 package cz.uhk.fim.skodaji1.kpgr1.hw01.graphics;
 
+import cz.uhk.fim.skodaji1.kpgr1.hw01.model.Line;
+import java.awt.Color;
+
 /**
  * Class abstracting classes with ability to rasterize line
  */
-public class LineRasterizer
+public abstract class LineRasterizer
 {
-    /*
-     Raster raster;
+    /**
+     * Raster to which line will be rasterized
+     */
+    Raster raster;
+    
+    /**
+     * Color of line
+     */
     Color color;
 
-    public LineRasterizer(Raster raster){
+    /**
+     * Creates new line rasterizer
+     * @param raster Raster to which line will be rasterized
+     */
+    public LineRasterizer(Raster raster)
+    {
         this.raster = raster;
     }
 
-    public void setColor(Color color) {
+    /**
+     * Sets color of line
+     * @param color New color of line
+     */
+    public void setColor(Color color)
+    {
         this.color = color;
     }
 
+    /**
+     * Sets color of line
+     * @param color New color of line
+     */
     public void setColor(int color) {
         this.color = new Color(color);
     }
 
-    public void rasterize(Line line) {
-        //TODO
+    /**
+     * Performs rasterization of line
+     * @param line Line which will be rasterized
+     */
+    public void rasterize(Line line)
+    {
+        this.rasterize(line.getStart().x, line.getStart().y,
+                line.getEnd().x, line.getEnd().y, line.getColor());
     }
 
-    public void rasterize(int x1, int y1, int x2, int y2, Color color) {
-        //TODO
+    /**
+     * Performs rasterization of line
+     * @param x1 Coordinate on X axis of starting point
+     * @param y1 Coordinate on Y axis of starting point
+     * @param x2 Coordinate on X axis of ending point
+     * @param y2 Coordinate on Y axis of ending point
+     * @param color Color of line
+     */;
+    public void rasterize(int x1, int y1, int x2, int y2, Color color)
+    {
+        this.setColor(color);
+        this.drawLine(x1, y1, x2, y2);
     }
 
-    protected void drawLine(int x1, int y1, int x2, int y2) {
-
-    }
-*/
+    /**
+     * Draws line
+     * @param x1 Coordinate on X axis of starting point
+     * @param y1 Coordinate on Y axis of starting point
+     * @param x2 Coordinate on X axis of ending point
+     * @param y2 Coordinate on Y axis of ending point
+     */
+    protected abstract void drawLine(int x1, int y1, int x2, int y2);
+    
+    /**
+     * Sets, whether line should be dashed
+     * @param dashed Flag, whether line should be dashed
+     */
+    public abstract void setDashed(boolean dashed);
 }
