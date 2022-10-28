@@ -74,6 +74,16 @@ public class Icons
     public static ImageIcon POLYGON;
     
     /**
+     * Undo icon
+     */
+    public static ImageIcon UNDO;
+    
+    /**
+     * Redo icon
+     */
+    public static ImageIcon REDO;
+    
+    /**
      * Reference to icons class
      */
     private static Icons ref;
@@ -92,6 +102,8 @@ public class Icons
         Icons.LINE = new ImageIcon(Main.class.getClassLoader().getResource("line.png"));
         Icons.TRIANGLE = new ImageIcon(Main.class.getClassLoader().getResource("triangle.png"));
         Icons.POLYGON = new ImageIcon(Main.class.getClassLoader().getResource("polygon.png"));
+        Icons.UNDO = new ImageIcon(Main.class.getClassLoader().getResource("undo.png"));
+        Icons.REDO = new ImageIcon(Main.class.getClassLoader().getResource("redo.png"));
     }
     
     /**

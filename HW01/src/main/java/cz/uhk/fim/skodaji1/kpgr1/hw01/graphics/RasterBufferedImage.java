@@ -20,8 +20,11 @@ package cz.uhk.fim.skodaji1.kpgr1.hw01.graphics;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -31,12 +34,11 @@ import javax.imageio.ImageIO;
  */
 public class RasterBufferedImage implements Raster
 {
-    private static int i = 0;
     
     /**
      * Image which will be edited
      */
-    private final BufferedImage image;
+    private BufferedImage image;
     
     /**
      * Color of image
@@ -51,6 +53,23 @@ public class RasterBufferedImage implements Raster
     public RasterBufferedImage(int width, int height)
     {
         this.image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+    }
+    
+    /**
+     * Creates copy of actual image
+     * @return Copy of actual image
+     */
+    private BufferedImage copyImage()
+    {
+        ColorModel colorModel = this.image.getColorModel();
+        boolean isAlphaPremultiplied = colorModel.isAlphaPremultiplied();
+        WritableRaster writableRaster = this.image.copyData(null);
+        return new BufferedImage(
+                colorModel,
+                writableRaster,
+                isAlphaPremultiplied,
+                null
+        );
     }
     
     /**

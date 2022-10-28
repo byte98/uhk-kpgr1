@@ -66,4 +66,5 @@ public interface Raster
      * @param color Pixel color
      */
     public abstract void setPixel(int x, int y, int color);
+    
 }

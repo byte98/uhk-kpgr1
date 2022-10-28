@@ -115,6 +115,16 @@ public class MainWindow extends JFrame
      * Polygon button from toolbar
      */
     private ToggleButton buttonModePolygon;
+    
+    /**
+     * Undo button from toolbar
+     */
+    private Button buttonUndo;
+    
+    /**
+     * Redo button from toolbar
+     */
+    private Button buttonRedo;
     //</editor-fold>
     
     private boolean controlsEnabled = true;
@@ -163,6 +173,29 @@ public class MainWindow extends JFrame
                     controller.toolChanged(MainWindowController.Tools.HAND);
                 }
             });
+            //</editor-fold>
+            this.toolBar.addSeparator();
+            //<editor-fold defaultstate="collapsed" desc="Undo button">
+            this.buttonUndo = new Button(Icons.UNDO);
+            this.toolBar.add(this.buttonUndo);
+            this.buttonUndo.addActionListener(new ActionListener(){
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    controller.undoClicked();
+                }            
+            });
+            //</editor-fold>
+            //<editor-fold defaultstate="collapsed" desc="Redo button">
+            this.buttonRedo = new Button(Icons.REDO);
+            this.toolBar.add(this.buttonRedo);
+            this.buttonRedo.addActionListener(new ActionListener(){
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    controller.redoClicked();
+                }            
+            });            
             //</editor-fold>
             this.toolBar.addSeparator();
             //<editor-fold defaultstate="collapsed" desc="Background color section">

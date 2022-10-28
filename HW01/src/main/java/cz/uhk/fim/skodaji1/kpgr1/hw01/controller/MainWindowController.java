@@ -264,13 +264,13 @@ public class MainWindowController
         {
             this.mainWindow.getRaster().clear();
             this.redraw();
+            this.lineRasterizer.setDashed(true);
             this.lineRasterizer.rasterize(this.lineFirst.x, this.lineFirst.y, position.x, position.y, this.foregroundColor);
         }
         else if (mouseAction == MouseEvent.MOUSE_RELEASED)
         {
-            this.lineRasterizer.setDashed(false);
-            this.lineRasterizer.rasterize(this.lineFirst.x, this.lineFirst.y, position.x, position.y, this.foregroundColor);
             this.lines.add(new Line(this.lineFirst, position, this.foregroundColor));
+            this.redraw();
             this.lineFirst = null;
         }
     }
@@ -281,10 +281,27 @@ public class MainWindowController
     private void redraw()
     {
         // Draw lines
+        this.lineRasterizer.setDashed(false);
         for(Line l: this.lines)
         {
             this.lineRasterizer.rasterize(l);
         }
         this.mainWindow.redraw();
+    }
+    
+    /**
+     * Handles click on undo button
+     */
+    public void undoClicked()
+    {
+        
+    }
+    
+    /**
+     * Handles click on redo button
+     */
+    public void redoClicked()
+    {
+        
     }
 }

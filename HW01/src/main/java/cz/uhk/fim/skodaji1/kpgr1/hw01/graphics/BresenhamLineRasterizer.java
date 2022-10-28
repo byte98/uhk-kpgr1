@@ -36,10 +36,10 @@ public class BresenhamLineRasterizer extends LineRasterizer
     private static final int DASH_SIZE = 5;
     
     /**
-     * Starting point of line
+     * Counter of drawn pixels
      */
-    private Point start;
-    
+    private int pixelCounter;
+        
     /**
      * Creates new line rasterizer which uses Bresenham algorithm
      * @param raster Raster to which line will be drawn
@@ -58,7 +58,6 @@ public class BresenhamLineRasterizer extends LineRasterizer
     @Override
     protected void drawLine(int x1, int y1, int x2, int y2)
     {
-        this.start = new Point(x1, y1);
         this.draw(x1, y1, x2, y2);
     }
     
@@ -74,30 +73,15 @@ public class BresenhamLineRasterizer extends LineRasterizer
             y >= 0 &&
             y < this.raster.getHeight())
         {
-            if ((this.dashed &&
-                    (
-                    this.computeDistance(this.start.x, this.start.y, x, y) / BresenhamLineRasterizer.DASH_SIZE
-                    ) % 2 == 1
-                    ) || this.dashed == false)
-            this.raster.setPixel(x, y, this.color.getRGB());
+            if ((this.dashed && (this.pixelCounter / BresenhamLineRasterizer.DASH_SIZE) % 2 == 1)
+                    || this.dashed == false)
+            {
+                this.raster.setPixel(x, y, this.color.getRGB());
+            }            
         }
+        this.pixelCounter++;
     }
-    
-    /**
-     * Computes distance between two points
-     * @param x1 Coordinate on X axis of first point
-     * @param y1 Coordinate on Y axis of first point
-     * @param x2 Coordinate on X axis of second point
-     * @param y2 Coordinate on Y axis of second point
-     * @return Distance between two points
-     */
-    private int computeDistance(int x1, int y1, int x2, int y2)
-    {
-        int x = (x2 - x1) * (x2 - x1);
-        int y = (y2 - y1) * (y1 - y1);
-        return (int)Math.sqrt(x + y);
-    }
-    
+        
     /**
      * Draws line
      * @param x1 Coordinate on X axis of starting point
@@ -109,24 +93,24 @@ public class BresenhamLineRasterizer extends LineRasterizer
      */
     private void draw(int x1, int y1, int x2, int y2)
     {
-        if (Math.abs(y2 - y1) < Math.abs(x2 - x1))
-        {
-            if (x1 > x2)
+        if (Math.abs(y2 - y1) < Math.abs(x2 - x1))  // Grows faster on X axis
+        {                                           // (slope is less than pi/2)
+            if (x1 > x2) // Line has been defined from right to left
             {
                 this.drawLow(x2, y2, x1, y1);
             }
-            else
+            else        // Line has been defined from left to right
             {
                 this.drawLow(x1, y1, x2, y2);
             }
         }
-        else
-        {
-            if (y1 > y2)
+        else // Grows faster on Y axis
+        {    // (slope is more than (or equals) pi/2)
+            if (y1 > y2) // Line has been defined from top to bottom
             {
                 this.drawHigh(x2, y2, x1, y1);
             }
-            else
+            else // Line has been defined from bottom to top
             {
                 this.drawHigh(x1, y1, x2, y2);
             }
@@ -134,7 +118,7 @@ public class BresenhamLineRasterizer extends LineRasterizer
     }
     
     /**
-     * Draw line for slope between 0 and minus 1
+     * Draw line for slope less than pi/2
      * @param x1 Coordinate on X axis of starting point
      * @param y1 Coordinate on Y axis of starting point
      * @param x2 Coordinate on X axis of ending point
@@ -168,7 +152,7 @@ public class BresenhamLineRasterizer extends LineRasterizer
     }
     
     /**
-     * Draw line for slope between 0 and 1
+     * Draw line for slope more than pi/2
      * @param x1 Coordinate on X axis of starting point
      * @param y1 Coordinate on Y axis of starting point
      * @param x2 Coordinate on X axis of ending point
