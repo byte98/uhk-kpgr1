@@ -70,4 +70,16 @@ public class Line extends Shape
     {
         return Arrays.asList(this);
     }
+    
+    @Override
+    public Line clone()
+    {
+        Line reti = new Line(this.color);
+        for (Point p: this.points)
+        {
+            reti.addPoint(new Point(p.x, p.y));
+        }
+        reti.setEditing(this.editing);
+        return reti;
+    }
 }

@@ -27,6 +27,7 @@ import cz.uhk.fim.skodaji1.kpgr1.hw01.model.Shape;
 import cz.uhk.fim.skodaji1.kpgr1.hw01.view.Icons;
 import cz.uhk.fim.skodaji1.kpgr1.hw01.view.MainWindow;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.ArrayList;
@@ -43,6 +44,108 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public class MainWindowController
 {
+    /**
+     * Class representing snapshot of actual state of main window
+     */
+    private static class Snapshot
+    {
+        /**
+         * Previous state of main window
+         */
+        private Snapshot previous;
+        
+        /**
+         * Next state of main window
+         */
+        private Snapshot next;
+        
+        /**
+         * Background color of window
+         */
+        private Color background;
+        
+        /**
+         * Foreground color of window
+         */
+        private Color foreground;
+        
+        /**
+         * Shapes drawn in window
+         */
+        private List<Shape> shapes;
+        
+        /**
+         * Creates new snapshot
+         * @param shapes Shapes drawn in window
+         * @param background Background color of window
+         * @param foreground Foreground color of window
+         */
+        public Snapshot(List<Shape> shapes, Color background, Color foreground)
+        {
+            this.shapes = new ArrayList<>();
+            for (Shape s: shapes)
+            {
+                this.shapes.add(s.clone());
+            }
+            this.previous = null;
+            this.next = null;
+            this.background = background;
+            this.foreground = foreground;
+        }
+        
+        //<editor-fold defaultstate="collapsed" desc="Getters & setters">
+        public Snapshot getPrevious()
+        {
+            return previous;
+        }
+
+        public void setPrevious(Snapshot previous)
+        {
+            this.previous = previous;
+        }
+
+        public Snapshot getNext()
+        {
+            return next;
+        }
+
+        public void setNext(Snapshot next)
+        {
+            this.next = next;
+        }
+
+        public Color getBackground()
+        {
+            return background;
+        }
+
+        public void setBackground(Color background)
+        {
+            this.background = background;
+        }
+
+        public Color getForeground()
+        {
+            return foreground;
+        }
+
+        public void setForeground(Color foreground)
+        {
+            this.foreground = foreground;
+        }
+
+        public List<Shape> getShapes()
+        {
+            return shapes;
+        }
+
+        public void setShapes(List<Shape> shapes) 
+        {
+            this.shapes = shapes;
+        }
+        //</editor-fold>
+    }
+    
     /**
      * Radius from points to edit them
      */
@@ -91,6 +194,7 @@ public class MainWindowController
     {
         this.reference = this;
         this.shapes = new ArrayList<>();
+        this.actualState = new Snapshot(this.shapes, this.backgroundColor, this.foregroundColor);
     }
     
     /**
@@ -123,6 +227,11 @@ public class MainWindowController
      * List of all inserted shapes
      */
     private List<Shape> shapes;
+    
+    /**
+     * Actual state of window
+     */
+    private Snapshot actualState;
     
     /**
      * Generates new line rasterizer.
@@ -175,6 +284,11 @@ public class MainWindowController
         this.tool = tool;
         this.mainWindow.selectTool(tool);
         this.mainWindow.setModesEnabled(this.tool == Tools.CURSOR);
+        this.mainWindow.setCursor(
+                this.tool == Tools.CURSOR
+                ? Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)
+                : Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+        );
     }
     
     /**
@@ -216,6 +330,7 @@ public class MainWindowController
         this.mainWindow.getRaster().clear();
         this.shapes.clear();
         this.mainWindow.redraw();
+        this.createSnapshot();
     }
     
     
@@ -312,6 +427,7 @@ public class MainWindowController
             this.actual = null;
             this.point = null;
             this.redraw();
+            this.createSnapshot();
         }
     }
     
@@ -345,6 +461,7 @@ public class MainWindowController
             this.actual.setPoint(this.point, position);
             this.actual.setEditing(false);
             this.redraw();
+            this.createSnapshot();
         }
     }
     
@@ -369,11 +486,44 @@ public class MainWindowController
     }
     
     /**
+     * Creates snapshot of actual state of window
+     */
+    private void createSnapshot()
+    {
+        Snapshot s = new Snapshot(this.shapes, this.backgroundColor, this.foregroundColor);
+        this.actualState.setNext(s);
+        s.setPrevious(this.actualState);
+        this.mainWindow.setUndoEnabled(Objects.nonNull(this.actualState.getPrevious()));
+        this.mainWindow.setRedoEnabled(Objects.nonNull(this.actualState.getNext()));
+        this.actualState = s;
+    }
+    
+    /**
+     * Reloads actual state of application
+     */
+    private void reloadState()
+    {
+        this.shapes = this.actualState.getShapes();
+        this.backgroundColor = this.actualState.getBackground();
+        this.foregroundColor = this.actualState.getForeground();
+        this.mainWindow.displayBackgroundColor(this.backgroundColor);
+        this.mainWindow.getRaster().setClearColor(this.backgroundColor.getRGB());
+        this.mainWindow.displayForegroundColor(this.foregroundColor);
+        this.redraw();
+    }
+    
+    /**
      * Handles click on undo button
      */
     public void undoClicked()
     {
-        
+        if (Objects.nonNull(this.actualState.getPrevious()))
+        {
+            this.actualState = this.actualState.getPrevious();
+            this.reloadState();
+            this.mainWindow.setUndoEnabled(Objects.nonNull(this.actualState.getPrevious()));
+            this.mainWindow.setRedoEnabled(Objects.nonNull(this.actualState.getNext()));
+        }
     }
     
     /**
@@ -381,6 +531,12 @@ public class MainWindowController
      */
     public void redoClicked()
     {
-        
+        if (Objects.nonNull(this.actualState.getNext()))
+        {
+            this.actualState = this.actualState.getNext();
+            this.reloadState();
+            this.mainWindow.setUndoEnabled(Objects.nonNull(this.actualState.getPrevious()));
+            this.mainWindow.setRedoEnabled(Objects.nonNull(this.actualState.getNext()));
+        }
     }
 }

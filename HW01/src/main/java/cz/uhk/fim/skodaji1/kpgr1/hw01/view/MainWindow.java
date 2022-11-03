@@ -23,6 +23,7 @@ import cz.uhk.fim.skodaji1.kpgr1.hw01.model.Point;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -182,6 +183,7 @@ public class MainWindow extends JFrame
             this.toolBar.addSeparator();
             //<editor-fold defaultstate="collapsed" desc="Undo button">
             this.buttonUndo = new Button(Icons.UNDO);
+            this.buttonUndo.setEnabled(false);
             this.toolBar.add(this.buttonUndo);
             this.buttonUndo.addActionListener(new ActionListener(){
                 @Override
@@ -193,6 +195,7 @@ public class MainWindow extends JFrame
             //</editor-fold>
             //<editor-fold defaultstate="collapsed" desc="Redo button">
             this.buttonRedo = new Button(Icons.REDO);
+            this.buttonRedo.setEnabled(false);
             this.toolBar.add(this.buttonRedo);
             this.buttonRedo.addActionListener(new ActionListener(){
                 @Override
@@ -459,5 +462,15 @@ public class MainWindow extends JFrame
         this.buttonModeLine.setEnabled(enabled);
         this.buttonModeTriangle.setEnabled(enabled);
         this.buttonModePolygon.setEnabled(enabled);
+    }
+    
+    /**
+     * Sets cursor displayed over canvas
+     * @param cursor New cursor for canvas
+     */
+    @Override
+    public void setCursor(Cursor cursor)
+    {
+        this.canvas.setCursor(cursor);
     }
 }

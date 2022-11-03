@@ -25,7 +25,7 @@ import java.util.List;
  * Class abstracting all planimetry objects
  * @author Jiri Skoda <jiri.skoda@student.upce.cz>
  */
-public abstract class Shape
+public abstract class Shape implements Cloneable
 {
     /**
      * Color of shape
@@ -123,24 +123,6 @@ public abstract class Shape
      */
     public void setPoint(Point oldPoint, Point newPoint)
     {
-        /*
-        System.out.println(String.format("[%03d;%03d] -> [%03d;%03d]", oldPoint.x, oldPoint.y, newPoint.x, newPoint.y));
-        for (Point p: this.points)
-        {
-            System.out.println(String.format("    [%03d; %03d]", p.x, p.y));
-            if (p.equals(oldPoint))
-            {
-                System.out.println("^^^");
-                p.x = newPoint.x;
-                p.y = newPoint.y;
-                System.out.println(String.format("   => [%03d; %03d]", p.x, p.y));
-                break;
-            }
-        }
-        for(Point p: this.points)
-        {
-            System.out.println(String.format("   -- [%03d; %03d]", p.x, p.y));
-        }*/
         if (this.points.contains(oldPoint))
         {
             this.points.set(this.points.indexOf(oldPoint), newPoint);
@@ -164,6 +146,11 @@ public abstract class Shape
             int idx = this.points.indexOf(nearest);
             this.points.add(idx, point);
         }
-        
     }
+    
+    /**
+     * Creates copy of shape
+     * @return Copy of shape
+     */
+    public abstract Shape clone();
 }
