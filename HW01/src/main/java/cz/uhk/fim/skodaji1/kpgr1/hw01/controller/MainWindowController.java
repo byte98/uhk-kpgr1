@@ -23,6 +23,7 @@ import cz.uhk.fim.skodaji1.kpgr1.hw01.graphics.LineRasterizer;
 import cz.uhk.fim.skodaji1.kpgr1.hw01.graphics.Raster;
 import cz.uhk.fim.skodaji1.kpgr1.hw01.model.Line;
 import cz.uhk.fim.skodaji1.kpgr1.hw01.model.Point;
+import cz.uhk.fim.skodaji1.kpgr1.hw01.model.Shape;
 import cz.uhk.fim.skodaji1.kpgr1.hw01.view.Icons;
 import cz.uhk.fim.skodaji1.kpgr1.hw01.view.MainWindow;
 import java.awt.Color;
@@ -41,6 +42,11 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public class MainWindowController
 {
+    /**
+     * Radius from points to edit them
+     */
+    private static final int RADIUS = 10;
+    
     /**
      * Enumeration of all available tools
      */
@@ -83,7 +89,7 @@ public class MainWindowController
     public MainWindowController()
     {
         this.reference = this;
-        this.lines = new ArrayList<>();
+        this.shapes = new ArrayList<>();
     }
     
     /**
@@ -102,14 +108,20 @@ public class MainWindowController
     private LineRasterizer lineRasterizer;
     
     /**
-     * First point when drawing line
+     * Shape which is actually drawn
      */
-    private Point lineFirst;
+    private Shape actual = null;
     
     /**
-     * List of all inserted lines
+     * Actually processed point
      */
-    private List<Line> lines;
+    private Point point = null;
+        
+    
+    /**
+     * List of all inserted shapes
+     */
+    private List<Shape> shapes;
     
     /**
      * Generates new line rasterizer.
@@ -160,7 +172,8 @@ public class MainWindowController
     public void toolChanged(Tools tool)
     {
         this.tool = tool;
-        mainWindow.selectTool(tool);
+        this.mainWindow.selectTool(tool);
+        this.mainWindow.setModesEnabled(this.tool == Tools.CURSOR);
     }
     
     /**
@@ -170,7 +183,7 @@ public class MainWindowController
     public void modeChanged(Modes mode)
     {
         this.mode = mode;
-        mainWindow.selectMode(mode);
+        this.mainWindow.selectMode(mode);
     }
     
     /**
@@ -200,7 +213,7 @@ public class MainWindowController
     public void cleanClicked()
     {
         this.mainWindow.getRaster().clear();
-        this.lines.clear();
+        this.shapes.clear();
         this.mainWindow.redraw();
     }
     
@@ -245,6 +258,21 @@ public class MainWindowController
         {
             this.handleLine(position, mouseAction);
         }
+        else if (this.tool == Tools.HAND)
+        {
+            this.handleHandTool(position, mouseAction);
+        }
+        
+    }
+    
+    /**
+     * Handles handle tool
+     * @param position Position of cursor
+     * @param mouseAction Type of mouse action
+     */
+    private void handleHandTool(Point position, int mouseAction)
+    {
+        
     }
     
     /**
@@ -257,34 +285,45 @@ public class MainWindowController
         if (mouseAction == MouseEvent.MOUSE_PRESSED)
         {
            this.lineRasterizer = this.lineRasterizer(this.mainWindow.getRaster());
-           this.lineFirst = position;
+           this.point = position;
            this.lineRasterizer.setDashed(true);
+           this.actual = new Line(this.foregroundColor);
+           this.shapes.add(this.actual);
+           this.actual.addPoint(this.point);
+           this.actual.addPoint(this.point);
+           this.actual.setEditing(true);
         }
         else if (mouseAction == MouseEvent.MOUSE_DRAGGED)
         {
-            this.mainWindow.getRaster().clear();
-            this.redraw();
             this.lineRasterizer.setDashed(true);
-            this.lineRasterizer.rasterize(this.lineFirst.x, this.lineFirst.y, position.x, position.y, this.foregroundColor);
+            this.actual.setPoint(this.point, position);
+            this.point = position;
+            this.redraw();
         }
         else if (mouseAction == MouseEvent.MOUSE_RELEASED)
         {
-            this.lines.add(new Line(this.lineFirst, position, this.foregroundColor));
+            this.actual.setPoint(this.point, position);
+            this.actual.setEditing(false);
             this.redraw();
-            this.lineFirst = null;
         }
     }
+    
+    
     
     /**
      * Redraws canvas
      */
     private void redraw()
     {
+        this.mainWindow.getRaster().clear();
         // Draw lines
-        this.lineRasterizer.setDashed(false);
-        for(Line l: this.lines)
+        for(Shape s: this.shapes)
         {
-            this.lineRasterizer.rasterize(l);
+            this.lineRasterizer.setDashed(s.getEditing());
+            for (Line l: s.getLines())
+            {
+                this.lineRasterizer.rasterize(l);
+            }
         }
         this.mainWindow.redraw();
     }

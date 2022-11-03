@@ -125,6 +125,11 @@ public class MainWindow extends JFrame
      * Redo button from toolbar
      */
     private Button buttonRedo;
+    
+    /**
+     * Finish button from toolbar
+     */
+    private Button buttonFinish;
     //</editor-fold>
     
     private boolean controlsEnabled = true;
@@ -272,6 +277,11 @@ public class MainWindow extends JFrame
                     }                    
                 });
                 //</editor-fold>
+                //<editor-fold defaultstate="collapsed" desc="Finish button">
+                this.buttonFinish = new Button(Icons.CHECK);
+                this.buttonFinish.setEnabled(false);
+                this.toolBar.add(this.buttonFinish);
+                //</editor-fold>
             //</editor-fold>
             this.toolBar.addSeparator();
             //<editor-fold defaultstate="collapsed" desc="Clean canvas">
@@ -411,5 +421,43 @@ public class MainWindow extends JFrame
         {
             c.setEnabled(this.controlsEnabled);
         }
+    }
+    
+    /**
+     * Sets button undo enabled
+     * @param enabled Flag, whether undo button should be enabled or not
+     */
+    public void setUndoEnabled(boolean enabled)
+    {
+        this.buttonUndo.setEnabled(enabled);
+    }
+    
+    /**
+     * Sets button redo enabled
+     * @param enabled Flag, whether redo button should be enabled or not
+     */
+    public void setRedoEnabled(boolean enabled)
+    {
+        this.buttonRedo.setEnabled(enabled);
+    }
+    
+    /**
+     * Sets button finish enabled
+     * @param enabled Flag, whether finish button should be enabled or not
+     */
+    public void setFinishEnabled(boolean enabled)
+    {
+        this.buttonFinish.setEnabled(enabled);
+    }
+    
+    /**
+     * Sets modes buttons enabled
+     * @param enabled Flag, whether modes buttons should be enabled or not
+     */
+    public void setModesEnabled(boolean enabled)
+    {
+        this.buttonModeLine.setEnabled(enabled);
+        this.buttonModeTriangle.setEnabled(enabled);
+        this.buttonModePolygon.setEnabled(enabled);
     }
 }

@@ -54,4 +54,48 @@ public class Point
         this.x = (int) Math.round(x);
         this.y = (int) Math.round(y);
     }
+    
+    /**
+     * Computes distance to another point
+     * @param p Point to which distance will be computed
+     * @return Distance between points
+     */
+    public double distanceTo(Point p)
+    {
+        return Math.sqrt(Math.pow(p.x - this.x, 2) + Math.pow(p.y - this.y, 2));
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int hash = 5;
+        hash = 67 * hash + this.x;
+        hash = 67 * hash + this.y;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+        {
+            return true;
+        }
+        if (obj == null)
+        {
+            return false;
+        }
+        if (getClass() != obj.getClass())
+        {
+            return false;
+        }
+        final Point other = (Point) obj;
+        if (this.x != other.x)
+        {
+            return false;
+        }
+        return this.y == other.y;
+    }
+    
+    
 }

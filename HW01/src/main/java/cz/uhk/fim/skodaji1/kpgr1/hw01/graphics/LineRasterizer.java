@@ -26,6 +26,11 @@ import java.awt.Color;
 public abstract class LineRasterizer
 {
     /**
+     * Size for spaces when drawing dashed line
+     */
+    public static final int DASH_SIZE = 2;
+    
+    /**
      * Raster to which line will be rasterized
      */
     Raster raster;

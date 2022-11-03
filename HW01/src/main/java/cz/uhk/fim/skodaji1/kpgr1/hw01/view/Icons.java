@@ -84,6 +84,11 @@ public class Icons
     public static ImageIcon REDO;
     
     /**
+     * Check mark icon
+     */
+    public static ImageIcon CHECK;
+    
+    /**
      * Reference to icons class
      */
     private static Icons ref;
@@ -104,6 +109,7 @@ public class Icons
         Icons.POLYGON = new ImageIcon(Main.class.getClassLoader().getResource("polygon.png"));
         Icons.UNDO = new ImageIcon(Main.class.getClassLoader().getResource("undo.png"));
         Icons.REDO = new ImageIcon(Main.class.getClassLoader().getResource("redo.png"));
+        Icons.CHECK = new ImageIcon(Main.class.getClassLoader().getResource("check.png"));
     }
     
     /**

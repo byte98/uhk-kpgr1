@@ -18,52 +18,23 @@
 package cz.uhk.fim.skodaji1.kpgr1.hw01.model;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Class representing line in 2D graphics
  * @author Jiri Skoda <jiri.skoda@student.upce.cz>
  */
-public class Line
+public class Line extends Shape
 {
     /**
-     * Starting point of line
-     */
-    private Point start;
-    
-    /**
-     * Ending point of line
-     */
-    private Point end;
-    
-    /**
-     * Color of line
-     */
-    private Color color;
-    
-    /**
      * Creates new line
-     * @param start Start of line
-     * @param end End of line
      * @param color Color of line
      */
-    public Line(Point start, Point end, Color color)
+    public Line(Color color)
     {
-        this.start = start;
-        this.end = end;
-        this.color = color;
-    }
-    
-    /**
-     * Creates new line
-     * @param x1 Coordinate on X axis of starting point
-     * @param y1 Coordinate on Y axis of starting point
-     * @param x2 Coordinate on X axis of ending point
-     * @param y2 Coordinate on Y axis of ending point
-     * @param color Color of line
-     */
-    public Line(int x1, int y1, int x2, int y2, int color)
-    {
-        this(new Point(x1, x2), new Point(x2, y2), new Color(color));
+        super(color);
     }
     
     /**
@@ -72,7 +43,12 @@ public class Line
      */
     public Point getStart()
     {
-        return this.start;
+        Point reti = null;
+        if (this.points.size() > 0)
+        {
+            reti = this.points.get(0);
+        }
+        return reti;
     }
     
     /**
@@ -81,15 +57,17 @@ public class Line
      */
     public Point getEnd()
     {
-        return this.end;
+        Point reti = null;
+        if (this.points.size() > 1)
+        {
+            reti = this.points.get(1);
+        }
+        return reti;
     }
-    
-    /**
-     * Gets color of line
-     * @return Color of line
-     */
-    public Color getColor()
+
+    @Override
+    public List<Line> getLines()
     {
-        return this.color;
+        return Arrays.asList(this);
     }
 }

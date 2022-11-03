@@ -31,11 +31,6 @@ public class BresenhamLineRasterizer extends LineRasterizer
     private boolean dashed = false;
     
     /**
-     * Size for spaces when drawing dashed line
-     */
-    private static final int DASH_SIZE = 5;
-    
-    /**
      * Counter of drawn pixels
      */
     private int pixelCounter;
@@ -73,7 +68,7 @@ public class BresenhamLineRasterizer extends LineRasterizer
             y >= 0 &&
             y < this.raster.getHeight())
         {
-            if ((this.dashed && (this.pixelCounter / BresenhamLineRasterizer.DASH_SIZE) % 2 == 1)
+            if ((this.dashed && (this.pixelCounter / LineRasterizer.DASH_SIZE) % 2 == 1)
                     || this.dashed == false)
             {
                 this.raster.setPixel(x, y, this.color.getRGB());
@@ -94,7 +89,7 @@ public class BresenhamLineRasterizer extends LineRasterizer
     private void draw(int x1, int y1, int x2, int y2)
     {
         if (Math.abs(y2 - y1) < Math.abs(x2 - x1))  // Grows faster on X axis
-        {                                           // (slope is less than pi/2)
+        {                                           // (slope is less than pi/4)
             if (x1 > x2) // Line has been defined from right to left
             {
                 this.drawLow(x2, y2, x1, y1);
@@ -105,7 +100,7 @@ public class BresenhamLineRasterizer extends LineRasterizer
             }
         }
         else // Grows faster on Y axis
-        {    // (slope is more than (or equals) pi/2)
+        {    // (slope is more than (or equals) pi/4)
             if (y1 > y2) // Line has been defined from top to bottom
             {
                 this.drawHigh(x2, y2, x1, y1);
@@ -118,7 +113,7 @@ public class BresenhamLineRasterizer extends LineRasterizer
     }
     
     /**
-     * Draw line for slope less than pi/2
+     * Draw line for slope less than pi/4
      * @param x1 Coordinate on X axis of starting point
      * @param y1 Coordinate on Y axis of starting point
      * @param x2 Coordinate on X axis of ending point
@@ -126,25 +121,25 @@ public class BresenhamLineRasterizer extends LineRasterizer
      */
     private void drawLow(int x1, int y1, int x2, int y2)
     {
-        int dx = x2 - x1;
-        int dy = y2 - y1;
-        int yi = 1;
-        if (dy < 0)
-        {
-            yi = -1;
-            dy = dy * (-1);
+        int dx = x2 - x1;               // Delta on X axis
+        int dy = y2 - y1;               // Delta on Y axis
+        int yi = 1;                     // Step on Y axis
+        if (dy < 0)                     // Check, whether line is going up or down
+        {                               // If going down, 
+            yi = -1;                    // change step to minus one
+            dy = dy * (-1);             // Set delta on Y axis to positive value
         }
-        int p = (2 * dy) - dx;
-        int y = y1;
-        for (int x = x1; x <= x2; x++)        
-        {
-            this.putPixel(x, y);
-            if (p > 0)
-            {
-                y = y + yi;
-                p = p + (2 * (dy - dx));
+        int p = (2 * dy) - dx;          // Prediction of error 
+        int y = y1;                     // Actual coordinate on Y axis
+        for (int x = x1; x <= x2; x++)  // Repeat for whole X axis      
+        {                               
+            this.putPixel(x, y);        
+            if (p > 0)                  
+            {                           // If error is more than zero,
+                y = y + yi;             // move on Y axis
+                p = p + (2 * (dy - dx));// Predict new error
             }
-            else
+            else                        // Else just predict new error
             {
                  p = p + (2 * dy);
             }
@@ -152,7 +147,7 @@ public class BresenhamLineRasterizer extends LineRasterizer
     }
     
     /**
-     * Draw line for slope more than pi/2
+     * Draw line for slope more than pi/4
      * @param x1 Coordinate on X axis of starting point
      * @param y1 Coordinate on Y axis of starting point
      * @param x2 Coordinate on X axis of ending point
