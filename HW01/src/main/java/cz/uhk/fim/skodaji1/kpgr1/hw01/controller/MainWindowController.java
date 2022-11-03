@@ -30,6 +30,7 @@ import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
@@ -272,7 +273,46 @@ public class MainWindowController
      */
     private void handleHandTool(Point position, int mouseAction)
     {
-        
+        if (mouseAction == MouseEvent.MOUSE_PRESSED)
+        {
+            this.actual = null;
+            this.point = null;
+            
+            // Find nearest point from all shapes
+            Point point = null;
+            Shape shape = null;
+            double dist = Double.MAX_VALUE;
+            for (Shape s: this.shapes)
+            {
+                Point p = s.getNearestPoint(position);
+                if (p.distanceTo(position) < dist)
+                {
+                    dist = p.distanceTo(position);
+                    point = p;
+                    shape = s;
+                }
+            }
+            // Check if found something and if is in allowed distance
+            if (Objects.nonNull(point) && Objects.nonNull(shape) && dist < MainWindowController.RADIUS)
+            {
+                this.actual = shape;
+                this.point = point;
+                this.actual.setEditing(true);
+            }
+        }
+        else if (mouseAction == MouseEvent.MOUSE_DRAGGED && Objects.nonNull(this.actual) && Objects.nonNull(this.point))
+        {
+            this.actual.setPoint(this.point, position);
+            this.point = position;
+            this.redraw();
+        }
+        else if (mouseAction == MouseEvent.MOUSE_RELEASED && Objects.nonNull(this.actual) && Objects.nonNull(this.point))
+        {
+            this.actual.setEditing(false);
+            this.actual = null;
+            this.point = null;
+            this.redraw();
+        }
     }
     
     /**
