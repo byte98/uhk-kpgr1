@@ -26,6 +26,8 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -33,10 +35,12 @@ import java.util.Objects;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
 
 /**
@@ -86,6 +90,11 @@ public class MainWindow extends JFrame
      * Hand button from toolbar
      */
     private ToggleButton buttonToolHand;
+    
+    /**
+     * Erase button from toolbar
+     */
+    private ToggleButton buttonToolErase;
     
     /**
      * Viewer of selected background color
@@ -146,6 +155,7 @@ public class MainWindow extends JFrame
         super.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         super.setLayout(new BorderLayout(10, 10));
         this.initializeComponents();
+        this.registerKeyEvents();
         this.controller = controller;
         this.ref = this;
     }
@@ -180,9 +190,21 @@ public class MainWindow extends JFrame
                 }
             });
             //</editor-fold>
+            //<editor-fold defaultstate="collapsed" desc="Erase button">
+            this.buttonToolErase = new ToggleButton(Icons.ERASE);
+            this.toolBar.add(this.buttonToolErase);
+            this.buttonToolErase.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                controller.toolChanged(MainWindowController.Tools.ERASE);
+            }
+            
+            });            
+            //</editor-fold>
             this.toolBar.addSeparator();
             //<editor-fold defaultstate="collapsed" desc="Undo button">
-            this.buttonUndo = new Button(Icons.UNDO);
+            this.buttonUndo = new Button(Icons.UNDO, "Zpět", "Vrátí se o akci zpět", "Ctrl + Z");
             this.buttonUndo.setEnabled(false);
             this.toolBar.add(this.buttonUndo);
             this.buttonUndo.addActionListener(new ActionListener(){
@@ -194,7 +216,7 @@ public class MainWindow extends JFrame
             });
             //</editor-fold>
             //<editor-fold defaultstate="collapsed" desc="Redo button">
-            this.buttonRedo = new Button(Icons.REDO);
+            this.buttonRedo = new Button(Icons.REDO, "Vpřed", "Opakuje již provedenou akci", "Ctrl + Y");
             this.buttonRedo.setEnabled(false);
             this.toolBar.add(this.buttonRedo);
             this.buttonRedo.addActionListener(new ActionListener(){
@@ -334,6 +356,37 @@ public class MainWindow extends JFrame
     }
     
     /**
+     * Registers key events
+     */
+    private void registerKeyEvents()
+    {
+        //<editor-fold defaultstate="collapsed" desc="Undo">
+        this.getRootPane().registerKeyboardAction(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                for(ActionListener a: buttonUndo.getActionListeners())
+                {
+                    a.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
+                }
+            }        
+        }, KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK), JComponent.WHEN_IN_FOCUSED_WINDOW);
+        //</editor-fold>
+        //<editor-fold defaultstate="collapsed" desc="Redo">
+        this.getRootPane().registerKeyboardAction(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                for(ActionListener a: buttonRedo.getActionListeners())
+                {
+                    a.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
+                }
+            }        
+        }, KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK), JComponent.WHEN_IN_FOCUSED_WINDOW);
+        //</editor-fold>
+    }
+    
+    /**
      * Shows selected tool
      * @param tool Tool which will be displayed as selected
      */
@@ -341,10 +394,12 @@ public class MainWindow extends JFrame
     {
         this.buttonToolCursor.setSelected(false);
         this.buttonToolHand.setSelected(false);
+        this.buttonToolErase.setSelected(false);
         switch(tool)
         {
             case CURSOR: this.buttonToolCursor.setSelected(true); break;
             case HAND:   this.buttonToolHand.setSelected(true);   break;
+            case ERASE:  this.buttonToolErase.setSelected(true);  break;
         }
     }
     

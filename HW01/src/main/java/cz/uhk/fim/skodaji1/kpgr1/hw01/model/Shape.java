@@ -43,6 +43,11 @@ public abstract class Shape implements Cloneable
     protected boolean editing = false;
     
     /**
+     * Flag, whether shape exists
+     */
+    protected boolean exists = true;
+    
+    /**
      * Creates new shape
      * @param c Color of shape
      */
@@ -153,4 +158,19 @@ public abstract class Shape implements Cloneable
      * @return Copy of shape
      */
     public abstract Shape clone();
+    
+    /**
+     * Removes point from shape
+     * @param p Point which will be removed
+     */
+    public abstract void removePoint(Point p);
+    
+    /**
+     * Gets flag, whether shape exists
+     * @return TRUE if shape exists, FALSE otherwise
+     */
+    public boolean exists()
+    {
+        return this.exists;
+    }
 }

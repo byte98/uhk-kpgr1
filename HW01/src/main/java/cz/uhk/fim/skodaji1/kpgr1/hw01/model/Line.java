@@ -82,4 +82,14 @@ public class Line extends Shape
         reti.setEditing(this.editing);
         return reti;
     }
+    
+    @Override
+    public void removePoint(Point p)
+    {
+        if (this.points.contains(p))
+        {
+            this.exists = false;
+            this.points.clear();
+        }
+    }
 }

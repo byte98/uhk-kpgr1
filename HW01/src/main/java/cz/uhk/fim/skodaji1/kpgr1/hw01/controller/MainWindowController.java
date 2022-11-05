@@ -156,7 +156,7 @@ public class MainWindowController
      */
     public enum Tools
     {
-        CURSOR, HAND
+        CURSOR, HAND, ERASE
     }
     
     /**
@@ -194,7 +194,6 @@ public class MainWindowController
     {
         this.reference = this;
         this.shapes = new ArrayList<>();
-        this.actualState = new Snapshot(this.shapes, this.backgroundColor, this.foregroundColor);
     }
     
     /**
@@ -270,6 +269,7 @@ public class MainWindowController
                     mainWindow.selectMode(mode);
                     mainWindow.displayBackgroundColor(backgroundColor);
                     mainWindow.displayForegroundColor(foregroundColor);
+                    createSnapshot();
                 }
             }
         );
@@ -377,6 +377,47 @@ public class MainWindowController
         else if (this.tool == Tools.HAND)
         {
             this.handleHandTool(position, mouseAction);
+        }
+        else if (this.tool == Tools.ERASE)
+        {
+            this.handleEraseTool(position, mouseAction);
+        }
+    }
+    
+    /**
+     * Handles erase tool
+     * @param position Position of cursor
+     * @param mouseEvent Type of mouse action
+     */
+    private void handleEraseTool(Point position, int mouseAction)
+    {
+        if (mouseAction == MouseEvent.MOUSE_RELEASED)
+        {
+            // Find nearest point from all shapes
+            Point point = null;
+            Shape shape = null;
+            double dist = Double.MAX_VALUE;
+            for (Shape s: this.shapes)
+            {
+                Point p = s.getNearestPoint(position);
+                if (p.distanceTo(position) < dist)
+                {
+                    dist = p.distanceTo(position);
+                    point = p;
+                    shape = s;
+                }
+            }
+            // Check if found something and if is in allowed distance
+            if (Objects.nonNull(point) && Objects.nonNull(shape) && dist < MainWindowController.RADIUS)
+            {
+                shape.removePoint(point);
+                if (shape.exists() == false)
+                {
+                    this.shapes.remove(shape);
+                }
+                this.redraw();
+                this.createSnapshot();
+            }
         }
         
     }
@@ -491,11 +532,14 @@ public class MainWindowController
     private void createSnapshot()
     {
         Snapshot s = new Snapshot(this.shapes, this.backgroundColor, this.foregroundColor);
-        this.actualState.setNext(s);
-        s.setPrevious(this.actualState);
-        this.mainWindow.setUndoEnabled(Objects.nonNull(this.actualState.getPrevious()));
-        this.mainWindow.setRedoEnabled(Objects.nonNull(this.actualState.getNext()));
+        if (Objects.nonNull(this.actualState))
+        {
+            this.actualState.setNext(s);
+            s.setPrevious(this.actualState);
+        }      
         this.actualState = s;
+        this.mainWindow.setUndoEnabled(Objects.nonNull(this.actualState.getPrevious()));
+        this.mainWindow.setRedoEnabled(Objects.nonNull(this.actualState.getNext()));        
     }
     
     /**

@@ -44,6 +44,43 @@ public class Button extends JButton
         this.icon = icon;
     }
     
+    /**
+     * Creates new button
+     * @param icon Icon which will be displayed in button
+     * @param toolTipHeader Header of tool tip
+     * @param toolTipBody Body of tool tip
+     */
+    public Button(ImageIcon icon, String toolTipHeader, String toolTipBody)
+    {
+        this(icon);
+        super.setToolTipText(String.format("<html><strong>%s</strong><br>%s</html>",toolTipHeader, toolTipBody));
+    }
+    
+    /**
+     * Creates new button
+     * @param icon Icon which will be displayed in button
+     * @param toolTipHeader Header of tool tip
+     * @param toolTipBody Body of tool tip
+     * @param toolTipKey Tip for keyboard shortcut
+     */
+    public Button(ImageIcon icon, String toolTipHeader, String toolTipBody, String toolTipKey)
+    {
+        this(icon);
+        StringBuilder key = new StringBuilder();
+        String[] parts = toolTipKey.split("\\+");
+        for (int i = 0; i < parts.length; i++)
+        {
+            key.append("<kbd>");
+            key.append(parts[i].trim());
+            key.append("</kbd>");
+            if (i < parts.length- 1)
+            {
+                key.append(" + ");
+            }
+        }
+        super.setToolTipText(String.format("<html><strong>%s</strong><br>%s<br><i>Klávesová zkratka: %s</i></html>",toolTipHeader, toolTipBody, key.toString()));
+    }
+    
     @Override
     public void paintComponent(Graphics g)
     {

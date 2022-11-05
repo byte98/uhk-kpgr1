@@ -89,6 +89,11 @@ public class Icons
     public static ImageIcon CHECK;
     
     /**
+     * Erase icon
+     */
+    public static ImageIcon ERASE;
+    
+    /**
      * Reference to icons class
      */
     private static Icons ref;
@@ -110,6 +115,7 @@ public class Icons
         Icons.UNDO = new ImageIcon(Main.class.getClassLoader().getResource("undo.png"));
         Icons.REDO = new ImageIcon(Main.class.getClassLoader().getResource("redo.png"));
         Icons.CHECK = new ImageIcon(Main.class.getClassLoader().getResource("check.png"));
+        Icons.ERASE = new ImageIcon(Main.class.getClassLoader().getResource("erase.png"));
     }
     
     /**
