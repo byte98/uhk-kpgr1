@@ -385,6 +385,16 @@ public class MainWindowController
     }
     
     /**
+     * Handles drawing of triangle
+     * @param position Position of cursor
+     * @param mouseEvent Type of mouse action
+     */
+    private void handleTriangleMode(Point position, int mouseAction)
+    {
+        
+    }
+    
+    /**
      * Handles erase tool
      * @param position Position of cursor
      * @param mouseEvent Type of mouse action
