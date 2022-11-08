@@ -40,10 +40,35 @@ public class ToggleButton extends JToggleButton
      * Creates new toggle button
      * @param icon Icon which will be displayed in button
      */
-    public ToggleButton (ImageIcon icon)
+    public ToggleButton(ImageIcon icon)
     {
         super(icon);
         this.icon = icon;
+    }
+    
+    /**
+     * Creates new toggle button
+     * @param icon Icon which will be displayed in button
+     * @param toolTipHeader Header of tool tip to button
+     * @param toolTipBody Body of tool tip to button
+     * @param toolTipKey Key shortcut to button
+     */
+    public ToggleButton(ImageIcon icon, String toolTipHeader, String toolTipBody, String toolTipKey)
+    {
+        this(icon);
+        StringBuilder key = new StringBuilder();
+        String[] parts = toolTipKey.split("\\+");
+        for (int i = 0; i < parts.length; i++)
+        {
+            key.append("<kbd>");
+            key.append(parts[i].trim());
+            key.append("</kbd>");
+            if (i < parts.length- 1)
+            {
+                key.append(" + ");
+            }
+        }
+        super.setToolTipText(String.format("<html><strong>%s</strong><br>%s<br><i>Klávesová zkratka: %s</i></html>",toolTipHeader, toolTipBody, key.toString()));
     }
     
     @Override

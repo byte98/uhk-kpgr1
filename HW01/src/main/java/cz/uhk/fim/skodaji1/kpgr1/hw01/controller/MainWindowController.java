@@ -374,6 +374,10 @@ public class MainWindowController
         {
             this.handleLine(position, mouseAction);
         }
+        else if (this.tool == Tools.CURSOR && this.mode == Modes.TRIANGLE)
+        {
+            this.handleTriangleMode(position, mouseAction);
+        }
         else if (this.tool == Tools.HAND)
         {
             this.handleHandTool(position, mouseAction);
@@ -391,7 +395,10 @@ public class MainWindowController
      */
     private void handleTriangleMode(Point position, int mouseAction)
     {
-        
+        if (mouseAction == MouseEvent.MOUSE_PRESSED)
+        {
+            
+        }
     }
     
     /**

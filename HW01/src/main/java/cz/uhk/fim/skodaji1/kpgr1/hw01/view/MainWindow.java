@@ -169,7 +169,7 @@ public class MainWindow extends JFrame
         this.toolBar = new JToolBar();
         this.toolBar.setFloatable(true);
             //<editor-fold defaultstate="collapsed" desc="Cursor button">
-            this.buttonToolCursor = new ToggleButton(Icons.CURSOR);
+            this.buttonToolCursor = new ToggleButton(Icons.CURSOR, "Nástroj kurzor", "Umožňuje vytváření nových objektů", "K");
             this.toolBar.add(this.buttonToolCursor);
             this.buttonToolCursor.addActionListener(new ActionListener(){
                 @Override
