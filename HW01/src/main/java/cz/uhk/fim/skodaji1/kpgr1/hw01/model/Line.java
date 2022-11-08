@@ -92,4 +92,40 @@ public class Line extends Shape
             this.points.clear();
         }
     }
+    
+    /**
+     * Computes distance between line and point
+     * @param p Point to which distance will be computed
+     * @return Computed distance between line and defined point
+     */
+    public double distanceTo(Point p)
+    {
+        double reti = Double.NaN;
+        
+        // At first, we must define general equation of line.
+        // So we start with directional vector and normal vector
+        double vectX = this.getEnd().x - this.getStart().x;
+        double vectY = this.getEnd().y - this.getEnd().y;
+        double normX = vectY;
+        double normY = (-1) * vectX;
+        
+        // General equation of line is: ax + by + c = 0.
+        // Coefficients a and be are known in this time (coordinates of
+        // normal vector). So its time to compute coefficient c.
+        // ax + by + c = 0           / - ax
+        //      by + c = 0 - ax      / - by
+        //           c = 0 - ax - by 
+        double c = 0 - (normX * this.getStart().x) - (normY * this.getStart().y);
+        
+        // Now, when we have general equation of line, we can compute distance
+        // of point from line.
+        //            |a*x0 + b*y0 + c|
+        // distance = ----------------
+        //            (a^2 + b^2)^(1/2)
+        
+        reti = Math.abs((normX * p.x) + (normY * p.y) + c) /
+               Math.sqrt(Math.pow(normX, 2) + Math.pow(normY, 2));
+        
+        return reti;
+    }
 }
