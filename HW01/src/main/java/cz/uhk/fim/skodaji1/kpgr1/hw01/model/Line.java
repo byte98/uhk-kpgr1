@@ -29,6 +29,17 @@ import java.util.List;
 public class Line extends Shape
 {
     /**
+     * Multiplier of axis and parallel line on X axis
+     */
+    private static final int AXIS_X_MULTIPLIER = 15360; // twice 8K resolution
+    
+    
+    /**
+     * Multiplier of axis and parallel line on Y axis
+     */
+    private static final int AXIS_Y_MULTIPLIER = 8640; // twice 8K resolution
+    
+    /**
      * Creates new line
      * @param color Color of line
      */
@@ -49,6 +60,18 @@ public class Line extends Shape
             reti = this.points.get(0);
         }
         return reti;
+    }
+    
+    /**
+     * Gets middle point of line
+     * @return Middle point of line
+     */
+    public Point getMiddle()
+    {
+        return new Point(
+                (this.getStart().x + this.getEnd().x) / 2,
+                (this.getStart().y + this.getEnd().y) / 2
+        );
     }
     
     /**
@@ -94,38 +117,21 @@ public class Line extends Shape
     }
     
     /**
-     * Computes distance between line and point
+     * Computes distance from point to the line using principles explained
+     * on {@link https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line}
      * @param p Point to which distance will be computed
-     * @return Computed distance between line and defined point
+     * @return Distance from point to the line
      */
     public double distanceTo(Point p)
     {
-        double reti = Double.NaN;
-        
-        // At first, we must define general equation of line.
-        // So we start with directional vector and normal vector
-        double vectX = this.getEnd().x - this.getStart().x;
-        double vectY = this.getEnd().y - this.getEnd().y;
-        double normX = vectY;
-        double normY = (-1) * vectX;
-        
-        // General equation of line is: ax + by + c = 0.
-        // Coefficients a and be are known in this time (coordinates of
-        // normal vector). So its time to compute coefficient c.
-        // ax + by + c = 0           / - ax
-        //      by + c = 0 - ax      / - by
-        //           c = 0 - ax - by 
-        double c = 0 - (normX * this.getStart().x) - (normY * this.getStart().y);
-        
-        // Now, when we have general equation of line, we can compute distance
-        // of point from line.
-        //            |a*x0 + b*y0 + c|
-        // distance = ----------------
-        //            (a^2 + b^2)^(1/2)
-        
-        reti = Math.abs((normX * p.x) + (normY * p.y) + c) /
-               Math.sqrt(Math.pow(normX, 2) + Math.pow(normY, 2));
-        
-        return reti;
+        double x0 = p.x;
+        double y0 = p.y;
+        double x1 = this.getStart().x;
+        double y1 = this.getStart().y;
+        double x2 = this.getEnd().x;
+        double y2 = this.getEnd().y;
+        return (((x2 - x1)*(y1 - y0)) - ((x1 - x0)*(y2 - y1)))
+                /
+                (Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)));
     }
 }

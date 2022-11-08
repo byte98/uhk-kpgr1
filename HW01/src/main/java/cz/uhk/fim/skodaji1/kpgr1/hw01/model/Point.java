@@ -17,12 +17,19 @@
  */
 package cz.uhk.fim.skodaji1.kpgr1.hw01.model;
 
+import java.awt.Color;
+
 /**
  * Class representing point in 2D coordinates
  * @author Jiri Skoda <jiri.skoda@student.upce.cz>
  */
 public class Point
 {
+    /**
+     * Length of lines used to draw point
+     */
+    private static final int LINE_LENGTH = 16;
+    
     /**
      * Coordinate on X axis
      */
@@ -97,5 +104,28 @@ public class Point
         return this.y == other.y;
     }
     
+    @Override
+    public String toString()
+    {
+        return String.format("[%03d; %03d]", this.x, this.y);
+    }
     
+    
+    /**
+     * Gets line representation of point used for drawing point
+     * @param c Color of lines
+     * @return Array with lines representing point
+     */
+    public Line[] toLines(Color c)
+    {
+        Line xLine = new Line(c);
+        xLine.addPoint(new Point(this.x - (Point.LINE_LENGTH / 2), this.y));
+        xLine.addPoint(new Point(this.x + (Point.LINE_LENGTH / 2), this.y));
+        
+        Line yLine = new Line(c);
+        yLine.addPoint(new Point(this.x, this.y - (Point.LINE_LENGTH / 2)));
+        yLine.addPoint(new Point(this.x, this.y + (Point.LINE_LENGTH / 2)));
+
+        return new Line[]{xLine, yLine};
+    }
 }

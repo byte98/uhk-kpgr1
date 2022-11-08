@@ -42,9 +42,16 @@ public class Triangle extends Shape
         List<Line> reti = new ArrayList<>();
         for (int i = 0; i < this.points.size(); i++)
         {
+            Point start = this.points.get(i);
+            Point end = this.points.get((i + 1) % this.points.size());
             Line l = new Line(this.color);
-            l.addPoint(this.points.get(i));
-            l.addPoint(this.points.get(i % this.points.size()));
+            l.addPoint(start);
+            l.addPoint(end);
+            reti.add(l);
+            if (this.points.size() == 2) // There is enough points for one line only
+            {
+                break;
+            }
         }
         return reti;
     }

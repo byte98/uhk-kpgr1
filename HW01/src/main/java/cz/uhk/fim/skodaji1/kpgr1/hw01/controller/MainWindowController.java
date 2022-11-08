@@ -24,6 +24,7 @@ import cz.uhk.fim.skodaji1.kpgr1.hw01.graphics.Raster;
 import cz.uhk.fim.skodaji1.kpgr1.hw01.model.Line;
 import cz.uhk.fim.skodaji1.kpgr1.hw01.model.Point;
 import cz.uhk.fim.skodaji1.kpgr1.hw01.model.Shape;
+import cz.uhk.fim.skodaji1.kpgr1.hw01.model.Triangle;
 import cz.uhk.fim.skodaji1.kpgr1.hw01.view.Icons;
 import cz.uhk.fim.skodaji1.kpgr1.hw01.view.MainWindow;
 import java.awt.Color;
@@ -333,6 +334,7 @@ public class MainWindowController
         this.createSnapshot();
     }
     
+    //<editor-fold defaultstate="collapsed" desc="Mouse events handlers">
     
     /**
      * Handles mouse drag start
@@ -364,6 +366,24 @@ public class MainWindowController
     }
     
     /**
+     * Handles mouse click
+     * @param position Position of mouse cursor
+     */
+    public void handleMouseClick(Point position)
+    {
+        this.handleMouseEvent(position, MouseEvent.MOUSE_CLICKED);
+    }
+    
+    /**
+     * Handles mouse move
+     * @param position Position of mouse cursor
+     */
+    public void handleMouseMove(Point position)
+    {
+        this.handleMouseEvent(position, MouseEvent.MOUSE_MOVED);
+    }
+    
+    /**
      * Handles any mouse event
      * @param position Position of cursor
      * @param mouseEvent Type of mouse action
@@ -376,7 +396,7 @@ public class MainWindowController
         }
         else if (this.tool == Tools.CURSOR && this.mode == Modes.TRIANGLE)
         {
-            this.handleTriangleMode(position, mouseAction);
+            this.handleTriangle(position, mouseAction);
         }
         else if (this.tool == Tools.HAND)
         {
@@ -388,17 +408,92 @@ public class MainWindowController
         }
     }
     
+    //</editor-fold>
+    
     /**
      * Handles drawing of triangle
      * @param position Position of cursor
      * @param mouseEvent Type of mouse action
      */
-    private void handleTriangleMode(Point position, int mouseAction)
+    private void handleTriangle(Point position, int mouseAction)
     {
-        if (mouseAction == MouseEvent.MOUSE_PRESSED)
+        if (mouseAction == MouseEvent.MOUSE_PRESSED && Objects.isNull(this.actual))
         {
-            
+           this.lineRasterizer = this.lineRasterizer(this.mainWindow.getRaster());
+           this.point = position;
+           this.lineRasterizer.setDashed(true);
+           this.actual = new Triangle(this.foregroundColor);
+           this.shapes.add(this.actual);
+           this.actual.addPoint(this.point);
+           this.actual.addPoint(this.point);
+           this.actual.setEditing(true);
         }
+        else if (mouseAction == MouseEvent.MOUSE_DRAGGED && Objects.nonNull(this.actual))
+        {
+            this.lineRasterizer.setDashed(true);
+            this.actual.setPoint(this.point, position);
+            this.point = position;
+            this.redraw();
+        }
+        else if (mouseAction == MouseEvent.MOUSE_RELEASED && Objects.nonNull(this.actual))
+        {
+            this.actual.setPoint(this.point, position);
+            Line base = this.actual.getLines().get(0);
+            this.point = this.computeTrianglePoint(base, position);            
+            this.actual.addPoint(this.point);
+        }
+        else if (mouseAction == MouseEvent.MOUSE_MOVED && Objects.nonNull(this.actual))
+        {
+            Line base = this.actual.getLines().get(0);
+            Point newPoint = this.computeTrianglePoint(base, position);
+            this.actual.setPoint(this.point, newPoint);
+            this.point = newPoint;
+            this.redraw();
+        }
+        else if (mouseAction == MouseEvent.MOUSE_PRESSED && Objects.nonNull(this.actual))
+        {
+            this.actual.setEditing(false);
+            this.redraw();
+            this.createSnapshot();
+            this.actual = null;
+            this.point = null;
+        }
+    }
+    
+    /**
+     * Computes third point for triangle
+     * @param baseLine Base line of triangle
+     * @param mousePosition Position of cursor
+     * @return Third point for triangle
+     */
+    private Point computeTrianglePoint(Line baseLine, Point mousePosition)
+    {
+        Point point = mousePosition;
+        // Get directional vector of line
+        int vecX = baseLine.getEnd().x - baseLine.getStart().x;
+        int vecY = baseLine.getEnd().y - baseLine.getStart().y;
+        
+        // Compute normal vector of line
+        double normX = vecY;
+        double normY = (-1) * vecX;
+        
+        // Normalize normal vector of line
+        double len = (int)Math.round(Math.sqrt(Math.pow(normX, 2) + Math.pow(normY, 2)));
+        normX = normX / len;
+        normY = normY / len;
+        
+        // Compute cooridnates of point
+        point = new Point(
+                baseLine.getMiddle().x + (baseLine.distanceTo(mousePosition) * normX),
+                baseLine.getMiddle().y + (baseLine.distanceTo(mousePosition) * normY)
+        );
+        
+//        this.redraw();
+//        for(Line l: point.toLines(Color.CYAN))
+//        {
+//            this.lineRasterizer.rasterize(l);
+//        }
+        return point;
     }
     
     /**

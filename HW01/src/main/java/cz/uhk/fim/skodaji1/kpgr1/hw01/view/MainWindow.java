@@ -348,6 +348,18 @@ public class MainWindow extends JFrame
             {
                 controller.handleMouseDrag(new Point(e.getX(), e.getY()));
             }
+            
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+                controller.handleMouseClick(new Point(e.getX(), e.getY()));
+            }
+            
+            @Override
+            public void mouseMoved(MouseEvent e)
+            {
+                controller.handleMouseMove(new Point(e.getX(), e.getY()));
+            }
         };
         this.canvas.addMouseListener(mouseAdapter);
         this.canvas.addMouseMotionListener(mouseAdapter);
