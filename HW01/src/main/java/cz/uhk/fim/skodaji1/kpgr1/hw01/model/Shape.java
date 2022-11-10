@@ -19,6 +19,8 @@ package cz.uhk.fim.skodaji1.kpgr1.hw01.model;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -140,15 +142,22 @@ public abstract class Shape implements Cloneable
      */
     public void addPoint(Point point)
     {
-        // Add point between nearest ones
-        if (this.points.size() < 3)
+        this.points.add(point);
+    }
+    
+    /**
+     * Adds point between already existing points
+     * @param point Point which will be added to shape
+     * @param previous Previous point
+     * @param next Next point
+     */
+    public void addPoint(Point point, Point previous, Point next)
+    {
+        if (this.points.contains(previous) && this.points.contains(next))
         {
-            this.points.add(point);
-        }
-        else
-        {
-            Point nearest = this.getNearestPoint(point);
-            int idx = this.points.indexOf(nearest);
+            int idx = (int)Math.ceil(((double)this.points.indexOf(previous) + (double)this.points.indexOf(next)) / (double)2);
+            //int idx = Math.min(this.points.indexOf(previous), this.points.indexOf(next));
+            //System.out.println(String.format("Add to [%d] between [%d] and [%d]", idx, this.points.indexOf(previous), this.points.indexOf(next)));
             this.points.add(idx, point);
         }
     }
@@ -172,5 +181,42 @@ public abstract class Shape implements Cloneable
     public boolean exists()
     {
         return this.exists;
+    }
+    
+    /**
+     * Gets points sorted by its distance to defined point
+     * @param p Point to which distance will be compared
+     * @return Array with sorted points
+     */
+    public Point[] getNearestPoints(Point p)
+    {
+        Point[] reti = new Point[this.points.size()];
+        reti = this.points.toArray(reti);
+        Arrays.sort(reti, new Comparator<Point>(){
+            @Override
+            public int compare(Point o1, Point o2)
+            {
+                int reti = 0;
+                if (o1.distanceTo(p) < o2.distanceTo(p))
+                {
+                    reti = -1;
+                }
+                else if (o1.distanceTo(p) > o2.distanceTo(p))
+                {
+                    reti = 1;
+                }
+                return reti;
+            }
+        });
+        return reti;
+    }
+    
+    /**
+     * Gets number of points
+     * @return Number of points
+     */
+    public int countPoints()
+    {
+        return this.points.size();
     }
 }

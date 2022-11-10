@@ -23,6 +23,7 @@ import cz.uhk.fim.skodaji1.kpgr1.hw01.graphics.LineRasterizer;
 import cz.uhk.fim.skodaji1.kpgr1.hw01.graphics.Raster;
 import cz.uhk.fim.skodaji1.kpgr1.hw01.model.Line;
 import cz.uhk.fim.skodaji1.kpgr1.hw01.model.Point;
+import cz.uhk.fim.skodaji1.kpgr1.hw01.model.Polygon;
 import cz.uhk.fim.skodaji1.kpgr1.hw01.model.Shape;
 import cz.uhk.fim.skodaji1.kpgr1.hw01.model.Triangle;
 import cz.uhk.fim.skodaji1.kpgr1.hw01.view.Icons;
@@ -222,6 +223,15 @@ public class MainWindowController
      */
     private Point point = null;
         
+    /**
+     * Temporary variable for point
+     */
+    private Point temp1 = null;
+    
+    /**
+     * Second temporary variable for point
+     */
+    private Point temp2 = null;
     
     /**
      * List of all inserted shapes
@@ -398,6 +408,10 @@ public class MainWindowController
         {
             this.handleTriangle(position, mouseAction);
         }
+        else if (this.tool == Tools.CURSOR && this.mode == Modes.POLYGON)
+        {
+            this.handlePolygon(position, mouseAction);
+        }
         else if (this.tool == Tools.HAND)
         {
             this.handleHandTool(position, mouseAction);
@@ -409,6 +423,95 @@ public class MainWindowController
     }
     
     //</editor-fold>
+    
+    /**
+     * Handles drawing of polygon
+     * @param position Position of cursor
+     * @param mouseAction Type of mouse action
+     */
+    private void handlePolygon(Point position, int mouseAction)
+    {
+        if (mouseAction == MouseEvent.MOUSE_PRESSED && Objects.isNull(this.actual))
+        {
+           this.lineRasterizer = this.lineRasterizer(this.mainWindow.getRaster());
+           this.point = position;
+           this.lineRasterizer.setDashed(true);
+           this.actual = new Polygon(this.foregroundColor);
+           this.shapes.add(this.actual);
+           this.actual.addPoint(this.point);
+           this.actual.addPoint(this.point);
+           this.actual.setEditing(true);
+        }
+        else if (mouseAction == MouseEvent.MOUSE_DRAGGED && Objects.nonNull(this.actual))
+        {
+            this.lineRasterizer.setDashed(true);
+            this.actual.setPoint(this.point, position);
+            this.point = position;
+            this.redraw();
+        }
+        else if (mouseAction == MouseEvent.MOUSE_RELEASED && Objects.nonNull(this.actual))
+        {
+            this.actual.setPoint(this.point, position);
+            this.point = position;          
+            if (this.actual.countPoints() < 3)
+            {
+                this.actual.addPoint(this.point);
+            }
+            else
+            {
+                if (this.actual.countPoints() == 3)
+                {
+                    Point[] nearest = this.actual.getNearestPoints(this.point);
+                    this.temp1 = nearest[0];
+                    this.temp2 = nearest[1];
+                }
+                this.actual.addPoint(this.point, this.temp1, this.temp2);
+                Point[] nearest = this.actual.getNearestPoints(this.point);
+                this.temp1 = nearest[0];
+                this.temp2 = nearest[1];
+            }
+            this.redraw();
+            this.drawTemp();
+        }
+        else if (mouseAction == MouseEvent.MOUSE_MOVED && Objects.nonNull(this.actual))
+        {
+            if (this.actual.countPoints() > 3)
+            {
+                Point[] nearest = this.actual.getNearestPoints(this.point);
+                if (nearest[1].equals(this.temp1) == false || nearest[2].equals(this.temp2) == false)
+                {
+                    this.temp1 = nearest[1];
+                    this.temp2 = nearest[2];
+                    this.actual.removePoint(this.point);
+                    this.actual.addPoint(this.point, this.temp1, this.temp2);
+                    
+                }                
+            }
+            this.actual.setPoint(this.point, position);
+            this.point = position;  
+            this.redraw();
+            this.drawTemp();
+        }
+    }
+    
+    private void drawTemp()
+    {
+        this.lineRasterizer.setDashed(false);
+        if (Objects.nonNull(this.temp1))
+        {
+            for (Line l: this.temp1.toLines(Color.RED))
+            {
+                this.lineRasterizer.rasterize(l);
+            }
+        }
+        if (Objects.nonNull(this.temp2))
+        {
+            for (Line l: this.temp2.toLines(Color.YELLOW))
+            {
+                this.lineRasterizer.rasterize(l);
+            }
+        }
+    }
     
     /**
      * Handles drawing of triangle
@@ -487,12 +590,6 @@ public class MainWindowController
                 baseLine.getMiddle().x + (baseLine.distanceTo(mousePosition) * normX),
                 baseLine.getMiddle().y + (baseLine.distanceTo(mousePosition) * normY)
         );
-        
-//        this.redraw();
-//        for(Line l: point.toLines(Color.CYAN))
-//        {
-//            this.lineRasterizer.rasterize(l);
-//        }
         return point;
     }
     
