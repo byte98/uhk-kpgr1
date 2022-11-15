@@ -18,7 +18,7 @@
 package cz.uhk.fim.skodaji1.kpgr1.hw01.controller;
 
 import com.formdev.flatlaf.FlatDarkLaf;
-import cz.uhk.fim.skodaji1.kpgr1.hw01.graphics.BresenhamLineRasterizer;
+import cz.uhk.fim.skodaji1.kpgr1.hw01.graphics.FilledLineRasterizer;
 import cz.uhk.fim.skodaji1.kpgr1.hw01.graphics.LineRasterizer;
 import cz.uhk.fim.skodaji1.kpgr1.hw01.graphics.Raster;
 import cz.uhk.fim.skodaji1.kpgr1.hw01.model.Line;
@@ -251,7 +251,7 @@ public class MainWindowController
      */
     private LineRasterizer lineRasterizer(Raster raster)
     {
-        return new BresenhamLineRasterizer(raster);
+        return new FilledLineRasterizer(raster);
     }
     
     /**

@@ -20,10 +20,10 @@ package cz.uhk.fim.skodaji1.kpgr1.hw01.graphics;
 import cz.uhk.fim.skodaji1.kpgr1.hw01.model.Point;
 
 /**
- * Line rasterizer using Bresenhams algorithm
+ * Line rasterizer using Bresenham algorithm
  * @author Jiri Skoda <jiri.skoda@student.upce.cz>
  */
-public class BresenhamLineRasterizer extends LineRasterizer
+public class FilledLineRasterizer extends LineRasterizer
 {    
     /**
      * Flag, whether line should be dashed
@@ -39,7 +39,7 @@ public class BresenhamLineRasterizer extends LineRasterizer
      * Creates new line rasterizer which uses Bresenham algorithm
      * @param raster Raster to which line will be drawn
      */
-    public BresenhamLineRasterizer(Raster raster)
+    public FilledLineRasterizer(Raster raster)
     {
         super(raster);
     }
