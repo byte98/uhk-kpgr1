@@ -222,7 +222,7 @@ public class MainWindowController
      * Actually processed point
      */
     private Point point = null;
-        
+            
     /**
      * Temporary variable for point
      */
@@ -424,6 +424,7 @@ public class MainWindowController
     
     //</editor-fold>
     
+    
     /**
      * Handles drawing of polygon
      * @param position Position of cursor
@@ -453,63 +454,51 @@ public class MainWindowController
         {
             this.actual.setPoint(this.point, position);
             this.point = position;          
-            if (this.actual.countPoints() < 3)
+            if (this.actual.countPoints() <= 3)
             {
                 this.actual.addPoint(this.point);
             }
             else
             {
-                if (this.actual.countPoints() == 3)
+                this.mainWindow.setFinishEnabled(true);
+                if (Objects.isNull(this.temp1) && Objects.isNull(this.temp2))
                 {
-                    Point[] nearest = this.actual.getNearestPoints(this.point);
-                    this.temp1 = nearest[0];
-                    this.temp2 = nearest[1];
+                    int idx = 0;
+                    Point[] points = this.actual.getNearestPoints(position);
+                    if (points[idx].equals(this.point))
+                    {
+                        idx++;
+                    }
+                    this.temp1 = points[idx];
+                    this.temp2 = points[(idx + 1) % points.length];
                 }
-                this.actual.addPoint(this.point, this.temp1, this.temp2);
-                Point[] nearest = this.actual.getNearestPoints(this.point);
-                this.temp1 = nearest[0];
-                this.temp2 = nearest[1];
+                this.actual.addPoint(this.point, this.temp1, this.temp2);    
             }
             this.redraw();
-            this.drawTemp();
         }
         else if (mouseAction == MouseEvent.MOUSE_MOVED && Objects.nonNull(this.actual))
         {
             if (this.actual.countPoints() > 3)
             {
-                Point[] nearest = this.actual.getNearestPoints(this.point);
-                if (nearest[1].equals(this.temp1) == false || nearest[2].equals(this.temp2) == false)
+                int idx = 0;
+                Point[] points = this.actual.getNearestPoints(position);
+                if (points[idx].equals(this.point))
                 {
-                    this.temp1 = nearest[1];
-                    this.temp2 = nearest[2];
+                    idx++;
+                }
+                Point p1 = points[idx];
+                Point p2 = points[(idx + 1) % points.length];
+                if (p1.equals(this.temp1) == false)
+                {
+                    this.temp1 = p1;
+                    this.temp2 = p2;
                     this.actual.removePoint(this.point);
                     this.actual.addPoint(this.point, this.temp1, this.temp2);
-                    
-                }                
+                }
             }
             this.actual.setPoint(this.point, position);
             this.point = position;  
             this.redraw();
-            this.drawTemp();
-        }
-    }
-    
-    private void drawTemp()
-    {
-        this.lineRasterizer.setDashed(false);
-        if (Objects.nonNull(this.temp1))
-        {
-            for (Line l: this.temp1.toLines(Color.RED))
-            {
-                this.lineRasterizer.rasterize(l);
-            }
-        }
-        if (Objects.nonNull(this.temp2))
-        {
-            for (Line l: this.temp2.toLines(Color.YELLOW))
-            {
-                this.lineRasterizer.rasterize(l);
-            }
         }
     }
     
@@ -555,11 +544,7 @@ public class MainWindowController
         }
         else if (mouseAction == MouseEvent.MOUSE_PRESSED && Objects.nonNull(this.actual))
         {
-            this.actual.setEditing(false);
-            this.redraw();
-            this.createSnapshot();
-            this.actual = null;
-            this.point = null;
+            this.finishDraw();
         }
     }
     
@@ -673,11 +658,7 @@ public class MainWindowController
         }
         else if (mouseAction == MouseEvent.MOUSE_RELEASED && Objects.nonNull(this.actual) && Objects.nonNull(this.point))
         {
-            this.actual.setEditing(false);
-            this.actual = null;
-            this.point = null;
-            this.redraw();
-            this.createSnapshot();
+            this.finishDraw();
         }
     }
     
@@ -709,13 +690,21 @@ public class MainWindowController
         else if (mouseAction == MouseEvent.MOUSE_RELEASED)
         {
             this.actual.setPoint(this.point, position);
-            this.actual.setEditing(false);
-            this.redraw();
-            this.createSnapshot();
+            this.finishDraw();
         }
     }
     
-    
+    /**
+     * Finishes drawing of actual shape
+     */
+    private void finishDraw()
+    {
+        this.actual.setEditing(false);
+        this.redraw();
+        this.createSnapshot();
+        this.actual = null;
+        this.point = null;
+    }
     
     /**
      * Redraws canvas
@@ -791,5 +780,16 @@ public class MainWindowController
             this.mainWindow.setUndoEnabled(Objects.nonNull(this.actualState.getPrevious()));
             this.mainWindow.setRedoEnabled(Objects.nonNull(this.actualState.getNext()));
         }
+    }
+    
+    /**
+     * Handles click on finish button
+     */
+    public void finishClicked()
+    {
+        this.actual.removePoint(this.point);
+        this.actual.setEditing(false);
+        this.finishDraw();
+        this.mainWindow.setFinishEnabled(false);
     }
 }

@@ -32,6 +32,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.Objects;
+import javax.swing.AbstractButton;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
@@ -303,8 +304,15 @@ public class MainWindow extends JFrame
                 });
                 //</editor-fold>
                 //<editor-fold defaultstate="collapsed" desc="Finish button">
-                this.buttonFinish = new Button(Icons.CHECK);
+                this.buttonFinish = new Button(Icons.CHECK, "Dokončit kreslení", "Dokončí kreslení aktuálního tvaru", "Enter");
                 this.buttonFinish.setEnabled(false);
+                this.buttonFinish.addActionListener(new ActionListener(){
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        controller.finishClicked();
+                    }                
+                });
                 this.toolBar.add(this.buttonFinish);
                 //</editor-fold>
             //</editor-fold>
@@ -373,29 +381,59 @@ public class MainWindow extends JFrame
     private void registerKeyEvents()
     {
         //<editor-fold defaultstate="collapsed" desc="Undo">
-        this.getRootPane().registerKeyboardAction(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                for(ActionListener a: buttonUndo.getActionListeners())
-                {
-                    a.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
-                }
-            }        
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK), JComponent.WHEN_IN_FOCUSED_WINDOW);
+        this.getRootPane().registerKeyboardAction(
+                this.createActionListener(this.buttonUndo),
+                KeyStroke.getKeyStroke(
+                        KeyEvent.VK_Z,
+                        KeyEvent.CTRL_DOWN_MASK),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Redo">
-        this.getRootPane().registerKeyboardAction(new ActionListener(){
+        this.getRootPane().registerKeyboardAction(
+                this.createActionListener(this.buttonRedo),
+                KeyStroke.getKeyStroke(
+                        KeyEvent.VK_Y,
+                        KeyEvent.CTRL_DOWN_MASK),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
+        //</editor-fold>
+        //<editor-fold defaultstate="collapsed" desc="Cursor">
+        this.getRootPane().registerKeyboardAction(
+                this.createActionListener(this.buttonUndo),
+                KeyStroke.getKeyStroke(
+                        KeyEvent.VK_K,
+                        0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
+        //</editor-fold>
+        //<editor-fold defaultstate="collapsed" desc="Finish">
+        this.getRootPane().registerKeyboardAction(
+                this.createActionListener(this.buttonFinish),
+                KeyStroke.getKeyStroke(
+                        KeyEvent.VK_ENTER,
+                        0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
+        //</editor-fold>
+    }
+    
+    /**
+     * Creates new action listener which performs action on button
+     * @param button Button on which action will be performed
+     * @return Action listener which performs action on button
+     */
+    private ActionListener createActionListener(AbstractButton button)
+    {
+        return new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                for(ActionListener a: buttonRedo.getActionListeners())
+                if (button.isEnabled())
                 {
-                    a.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
-                }
-            }        
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK), JComponent.WHEN_IN_FOCUSED_WINDOW);
-        //</editor-fold>
+                    for(ActionListener al: button.getActionListeners())
+                    {
+                        al.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
+                    }
+                }                
+            }            
+        };
     }
     
     /**

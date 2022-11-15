@@ -155,10 +155,18 @@ public abstract class Shape implements Cloneable
     {
         if (this.points.contains(previous) && this.points.contains(next))
         {
-            int idx = (int)Math.ceil(((double)this.points.indexOf(previous) + (double)this.points.indexOf(next)) / (double)2);
-            //int idx = Math.min(this.points.indexOf(previous), this.points.indexOf(next));
-            //System.out.println(String.format("Add to [%d] between [%d] and [%d]", idx, this.points.indexOf(previous), this.points.indexOf(next)));
+            int idxPrev = this.points.indexOf(previous);
+            int idxNext = this.points.indexOf(next);
+            int idx = Math.max(this.points.indexOf(previous), this.points.indexOf(next));
+            if (Math.min(idxPrev, idxNext) == 0 && Math.max(idxPrev, idxNext) == this.points.size() - 1)
+            {
+                idx = 0;
+            }
             this.points.add(idx, point);
+        }
+        else
+        {
+            this.addPoint(point);
         }
     }
     
