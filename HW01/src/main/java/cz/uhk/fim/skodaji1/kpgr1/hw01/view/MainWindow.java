@@ -141,6 +141,21 @@ public class MainWindow extends JFrame
      * Finish button from toolbar
      */
     private Button buttonFinish;
+    
+    /**
+     * Button which cleans canvas
+     */
+    private Button cleanButton;
+    
+    /**
+     * Button with background color from toolbar
+     */
+    private Button backgroundColorButton;
+    
+    /**
+     * Button with foreground color from toolbar
+     */
+    private Button foregroundColorButton;
     //</editor-fold>
     
     private boolean controlsEnabled = true;
@@ -181,7 +196,7 @@ public class MainWindow extends JFrame
             });
             //</editor-fold>
             //<editor-fold defaultstate="collapsed" desc="Hand button">
-            this.buttonToolHand = new ToggleButton(Icons.HAND);
+            this.buttonToolHand = new ToggleButton(Icons.HAND, "Nástroj ruka", "Umožňuje editovat již nakreslené objekty", "R");
             this.toolBar.add(this.buttonToolHand);
             this.buttonToolHand.addActionListener(new ActionListener(){
                 @Override
@@ -192,7 +207,7 @@ public class MainWindow extends JFrame
             });
             //</editor-fold>
             //<editor-fold defaultstate="collapsed" desc="Erase button">
-            this.buttonToolErase = new ToggleButton(Icons.ERASE);
+            this.buttonToolErase = new ToggleButton(Icons.ERASE, "Nástroj pro mazání", "Umožňuje mazat části nakreslených objektů", "C");
             this.toolBar.add(this.buttonToolErase);
             this.buttonToolErase.addActionListener(new ActionListener(){
             @Override
@@ -233,8 +248,8 @@ public class MainWindow extends JFrame
             this.toolBar.add(new Label(Icons.BACKGROUND));
             this.backgroundColor = new ColorDisplay(Color.BLACK);
             this.toolBar.add(this.backgroundColor);
-            Button colorButton = new Button(Icons.PALETTE);
-            colorButton.addActionListener(new ActionListener(){
+            this.backgroundColorButton = new Button(Icons.PALETTE, "Barva pozadí", "Otevře dialog pro výběr barvy pozadí", "B");
+            this.backgroundColorButton.addActionListener(new ActionListener(){
             @Override
                 public void actionPerformed(ActionEvent e)
                 {
@@ -246,15 +261,15 @@ public class MainWindow extends JFrame
                 }
             
             });
-            this.toolBar.add(colorButton);
+            this.toolBar.add(this.backgroundColorButton);
             //</editor-fold>
             this.toolBar.addSeparator();
             //<editor-fold defaultstate="collapsed" desc="Foreground color section">
             this.toolBar.add(new Label(Icons.FOREGROUND));
             this.foregroundColor = new ColorDisplay(Color.BLACK);
             this.toolBar.add(this.foregroundColor);
-            Button cButton = new Button(Icons.PALETTE);
-            cButton.addActionListener(new ActionListener(){
+            this.foregroundColorButton = new Button(Icons.PALETTE, "Barva popředí", "Otevře dialog pro výběr barvy popředí", "F");
+            this.foregroundColorButton.addActionListener(new ActionListener(){
             @Override
                 public void actionPerformed(ActionEvent e)
                 {
@@ -266,12 +281,12 @@ public class MainWindow extends JFrame
                 }
             
             });
-            this.toolBar.add(cButton);
+            this.toolBar.add(this.foregroundColorButton);
             //</editor-fold>
             this.toolBar.addSeparator();
             //<editor-fold defaultstate="collapsed" desc="Mode selection">
                 //<editor-fold defaultstate="collapsed" desc="Line">
-                this.buttonModeLine = new ToggleButton(Icons.LINE);                
+                this.buttonModeLine = new ToggleButton(Icons.LINE, "Úsečka", "Režim kreslení úsečky", "L");                
                 toolBar.add(this.buttonModeLine);
                 this.buttonModeLine.addActionListener(new ActionListener(){
                     @Override
@@ -282,7 +297,7 @@ public class MainWindow extends JFrame
                 });
                 //</editor-fold>
                 //<editor-fold defaultstate="collapsed" desc="Triangle">
-                this.buttonModeTriangle = new ToggleButton(Icons.TRIANGLE);
+                this.buttonModeTriangle = new ToggleButton(Icons.TRIANGLE, "Rovnoramenný trojúhelník", "Režim kreslení rovnoramenného trojúhelníku", "T");
                 this.toolBar.add(this.buttonModeTriangle);
                 this.buttonModeTriangle.addActionListener(new ActionListener(){
                     @Override
@@ -293,7 +308,7 @@ public class MainWindow extends JFrame
                 });
                 //</editor-fold>
                 //<editor-fold defaultstate="collapsed" desc="Polygon">
-                this.buttonModePolygon = new ToggleButton(Icons.POLYGON);
+                this.buttonModePolygon = new ToggleButton(Icons.POLYGON, "Polygon", "Režim kreslení mnohoúhelníku", "P");
                 this.toolBar.add(this.buttonModePolygon);
                 this.buttonModePolygon.addActionListener(new ActionListener(){
                     @Override
@@ -318,15 +333,15 @@ public class MainWindow extends JFrame
             //</editor-fold>
             this.toolBar.addSeparator();
             //<editor-fold defaultstate="collapsed" desc="Clean canvas">
-            Button cleanButton = new Button(Icons.ERASER);
-            cleanButton.addActionListener(new ActionListener(){
+            this.cleanButton = new Button(Icons.ERASER, "Smazat plátno", "Vyčistní plátno a odstraní všechny nakreslené objekty", "Del");
+            this.cleanButton.addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
                     controller.cleanClicked();
                 }            
             });
-            this.toolBar.add(cleanButton);
+            this.toolBar.add(this.cleanButton);
             //</editor-fold>
         super.add(this.toolBar, BorderLayout.NORTH);
         //</editor-fold>
@@ -398,9 +413,49 @@ public class MainWindow extends JFrame
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Cursor">
         this.getRootPane().registerKeyboardAction(
-                this.createActionListener(this.buttonUndo),
+                this.createActionListener(this.buttonToolCursor),
                 KeyStroke.getKeyStroke(
                         KeyEvent.VK_K,
+                        0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
+        //</editor-fold>
+        //<editor-fold defaultstate="collapsed" desc="Hand">
+        this.getRootPane().registerKeyboardAction(
+                this.createActionListener(this.buttonToolHand),
+                KeyStroke.getKeyStroke(
+                        KeyEvent.VK_R,
+                        0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
+        //</editor-fold>
+        //<editor-fold defaultstate="collapsed" desc="Erase">
+        this.getRootPane().registerKeyboardAction(
+                this.createActionListener(this.buttonToolErase),
+                KeyStroke.getKeyStroke(
+                        KeyEvent.VK_C,
+                        0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
+        //</editor-fold>
+        //<editor-fold defaultstate="collapsed" desc="Line">
+        this.getRootPane().registerKeyboardAction(
+                this.createActionListener(this.buttonModeLine),
+                KeyStroke.getKeyStroke(
+                        KeyEvent.VK_L,
+                        0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
+        //</editor-fold>
+        //<editor-fold defaultstate="collapsed" desc="Triangle">
+        this.getRootPane().registerKeyboardAction(
+                this.createActionListener(this.buttonModeTriangle),
+                KeyStroke.getKeyStroke(
+                        KeyEvent.VK_T,
+                        0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
+        //</editor-fold>
+        //<editor-fold defaultstate="collapsed" desc="Polygon">
+        this.getRootPane().registerKeyboardAction(
+                this.createActionListener(this.buttonModePolygon),
+                KeyStroke.getKeyStroke(
+                        KeyEvent.VK_P,
                         0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
         //</editor-fold>
@@ -409,6 +464,30 @@ public class MainWindow extends JFrame
                 this.createActionListener(this.buttonFinish),
                 KeyStroke.getKeyStroke(
                         KeyEvent.VK_ENTER,
+                        0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
+        //</editor-fold>
+        //<editor-fold defaultstate="collapsed" desc="Clean canvas">
+        this.getRootPane().registerKeyboardAction(
+                this.createActionListener(this.cleanButton),
+                KeyStroke.getKeyStroke(
+                        KeyEvent.VK_DELETE,
+                        0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
+        //</editor-fold>
+        //<editor-fold defaultstate="collapsed" desc="Background color">
+        this.getRootPane().registerKeyboardAction(
+                this.createActionListener(this.backgroundColorButton),
+                KeyStroke.getKeyStroke(
+                        KeyEvent.VK_B,
+                        0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
+        //</editor-fold>
+        //<editor-fold defaultstate="collapsed" desc="Foreground color">
+        this.getRootPane().registerKeyboardAction(
+                this.createActionListener(this.foregroundColorButton),
+                KeyStroke.getKeyStroke(
+                        KeyEvent.VK_F,
                         0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
         //</editor-fold>
